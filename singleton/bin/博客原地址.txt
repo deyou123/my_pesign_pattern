@@ -1,0 +1,139 @@
+单模式：https://blog.csdn.net/qq_25827845/article/details/51150165#commentBox
+
+代码片段：
+/**
+ * 单线程环境下的饿汉式单例模式    
+ * @author ywq
+ *
+ *
+ */
+class Single{  
+    private static final Single s = new Single();  
+    private Single(){}  
+    public static Single getInstance(){  
+        return s;  
+    }  
+} 
+ 
+/**
+ * 单线程环境下的懒汉式单例模式    
+ * @author ywq
+ *
+ *
+ */
+class Single{  
+    private static Single s = null;  
+    private Single(){}  
+  
+    public static  Single getInstance(){  
+        if(null==s)  
+           s = new Single();  
+        return s;  
+    }  
+} 
+ 
+/**
+ * 多线程环境下的懒汉式单例模式(简单加锁)    
+ * @author ywq
+ *
+ *
+ */
+class Single{  
+    private static Single s = null;  
+    private Single(){}  
+  
+    public static  Single getInstance(){
+    	synchronized(Single.class){
+    		if(null==s)  
+    			s = new Single();  
+    	}
+    	return s;  
+    }  
+} 
+ 
+/**
+ * 多线程环境下的懒汉式单例模式(DCL，双检锁实现) 
+ * 由于指令可能重排序，即DCL可能会返回一个并不完整的对象。   
+ * @author ywq
+ *
+ *
+ */
+class Single{  
+    private static Single s = null;  
+    private Single(){}  
+  
+    public static  Single getInstance(){
+    	if(null==s){
+    		synchronized(Single.class){
+        		if(null==s)  
+        			s = new Single();  
+        	}
+    	}
+    	return s;  
+    }  
+}
+ 
+ 
+/**
+ * 多线程环境下的懒汉式单例模式(DCL，双检锁+volatile实现) 
+ * 加入了volatile变量来禁止指令重排序   
+ * @author ywq
+ *
+ *
+ */
+class Single{  
+    private static volatile Single s = null;  
+    private Single(){}  
+  
+    public static  Single getInstance(){
+    	if(null==s){
+    		synchronized(Single.class){
+        		if(null==s)  
+        			s = new Single();  
+        	}
+    	}
+    	return s;  
+    }  
+}
+ 
+/**
+ * 多线程环境下的懒汉式单例模式(基于静态内部类实现)    
+ * @author ywq
+ *
+ *
+ */
+class Single{  
+	
+    private Single(){}  
+    private static class Inner{
+    	final static Single s = new Single();
+    }
+    public static  Single getInstance(){
+    	return Inner.s;
+    }  
+}
+
+/**
+ * 使用枚举的单例模式
+ */
+public class EnumSingleton{
+    private EnumSingleton(){}
+    public static EnumSingleton getInstance(){
+        return Singleton.INSTANCE.getInstance();
+    }
+    
+    private static enum Singleton{
+        INSTANCE;
+        
+        private EnumSingleton singleton;
+        //JVM会保证此方法绝对只调用一次
+        private Singleton(){
+            singleton = new EnumSingleton();
+        }
+        public EnumSingleton getInstance(){
+            return singleton;
+        }
+    }
+}
+
+ 
